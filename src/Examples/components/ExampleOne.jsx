@@ -17,6 +17,7 @@ const Rectangle = ({ shapeProps, isSelected, onSelect, onChange }) => {
     <React.Fragment>
       <Rect
         onClick={onSelect}
+        onTap={onSelect}
         ref={shapeRef}
         {...shapeProps}
         draggable
@@ -108,6 +109,7 @@ const ExampleOne = () => {
               shapeProps={rect}
               isSelected={rect.id === selectedId}
               onSelect={() => {
+                console.log('<rectangle>.onSelect');
                 selectShape(rect.id);
               }}
               onChange={newAttrs => {
