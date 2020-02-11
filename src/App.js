@@ -6,6 +6,8 @@ import {
   Link
 } from "react-router-dom";
 
+import './style.scss'
+
 const Routes = () => (
   <Switch>
     <Route path="/">
