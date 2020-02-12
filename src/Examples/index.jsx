@@ -5,16 +5,22 @@ import {
   Link,
   useRouteMatch,
 } from "react-router-dom";
-import ExampleOne from "./components/ExampleOne";
 
 import './style.scss'
+import ExampleOne from "./components/ExampleOne";
+import ExampleTwo from "./components/ExampleTwo";
 
 const examples = [
   {
     label: 'Example 1',
     name: 'one',
     component: ExampleOne,
-  }
+  },
+  {
+    label: 'Example 2',
+    name: 'two',
+    component: ExampleTwo,
+  },
 ];
 
 const Examples = () => {
@@ -34,7 +40,7 @@ const Examples = () => {
       <div className={'playground'}>
         <Switch>
           {examples.map((example, index) => (
-            <Route key={index} exact path={`${path}/one`} component={ExampleOne} />
+            <Route key={index} exact path={`${path}/${example.name}`} component={example.component} />
           ))}
         </Switch>
       </div>

@@ -4,8 +4,10 @@
 
 .examples {
   nav {
-    display: block;
-    float: right;
     margin-right: 1rem;
+    z-index: 99999;
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 }
