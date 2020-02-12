@@ -1,9 +1,10 @@
 import React from 'react';
-import { Stage, Layer, Group, Text, Rect, Transformer } from 'react-konva';
+import { Stage, Layer, Group, Text, Rect, Ellipse, Transformer } from 'react-konva';
 
-const MyRect = ({ x, y, width, height, onChange = () => {} }) => {
+const MyRect = ({ shapeProps, onChange = () => {} }) => {
   const trRef = React.useRef();
   const shapeRef = React.useRef();
+  const { x, y, width, height } = shapeProps;
 
   React.useEffect(() => {
       // we need to attach transformer manually
@@ -17,6 +18,13 @@ const MyRect = ({ x, y, width, height, onChange = () => {} }) => {
         ref={shapeRef}
         x={x}
         y={y}
+        onDragEnd={e => {
+          onChange({
+            ...shapeProps,
+            x: e.target.x(),
+            y: e.target.y()
+          });
+        }}
         onTransformEnd={(e) => {
           const node = shapeRef.current;
           const scaleX = node.scaleX();
@@ -25,7 +33,13 @@ const MyRect = ({ x, y, width, height, onChange = () => {} }) => {
 
           console.log('scaleX, scaleY => %s, %s', scaleX, scaleY);
 
+          // work with onChange, because width,height of dom has been set to new
+          // meanwhile need to set scaleX,scaleY back to 1 times of shape.
+          node.scaleX(1);
+          node.scaleY(1);
+
           const newShapeProps = {
+            ...shapeProps,
             x: node.x(),
             y: node.y(),
             rotation: rotation || 0,
@@ -37,7 +51,7 @@ const MyRect = ({ x, y, width, height, onChange = () => {} }) => {
           onChange(newShapeProps);
         }}
       >
-        <Rect x={0} y={0} width={width} height={height} fill={'#ff0'} />
+        <Ellipse x={width/2} y={height/2} width={width} height={height} fill={'#ff0'} />
         <Text x={0} y={0} width={width} height={height} verticalAlign={'middle'} align={'center'} text={'Hello, world\nI am here'} />
       </Group>
       <Transformer
@@ -55,19 +69,19 @@ const MyRect = ({ x, y, width, height, onChange = () => {} }) => {
   );
 }
 
-// const initialGraphs = [
-//   {
-//     id: 'g1',
-//     x: 10,
-//     y: 10,
-//     width: 100,
-//     height: 100,
-//     fill: 'red',
-//   }
-// ];
+const initialShapes = [
+  {
+    id: 'g1',
+    x: 100,
+    y: 100,
+    width: 200,
+    height: 100,
+    fill: 'yellow',
+  }
+];
 
 const ExampleTwo = () => {
-  // const [graphs, setGraphs] = React.useState(initialGraphs);
+  const [shapes, setShapes] = React.useState(initialShapes);
   const [selectedId, selectShape] = React.useState(null);
 
   console.log('[selected] =>', selectedId);
@@ -85,15 +99,25 @@ const ExampleTwo = () => {
       }}
     >
       <Layer>
-        <MyRect
-          x={100}
-          y={100}
-          width={200}
-          height={100}
-          onChange={(newProps) => {
-            console.log('new group of rect should be => %o', newProps);
-          }}
-        />
+        {shapes.map(shapeProps => (
+          <MyRect
+            key={shapeProps.id}
+            shapeProps={shapeProps}
+            onChange={(newProps) => {
+              console.log('new group of rect should be => %o', newProps);
+              const newShapes = shapes.map(shape => {
+                if (shape.id === shapeProps.id) {
+                  return {
+                    ...shape,
+                    ...newProps,
+                  };
+                }
+                return shape;
+              });
+              setShapes(newShapes);
+            }}
+          />
+        ))}
       </Layer>
     </Stage>
   );
